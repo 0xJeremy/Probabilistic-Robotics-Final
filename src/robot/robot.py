@@ -35,8 +35,7 @@ class Robot():
 		if action['cmd'] is 'shutdown':
 			self.stop()
 		if action['cmd'] is 'move':
-			if action['key'] is not None:
-				print("Robot Moving... {}".format(action['key']))
+			print("Moving: {} {} {} {}".format(action['params']['l_orientation'], action['params']['r_orientation'], action['params']['l_speed'], action['params']['r_speed']))
 
 
 	def get_estimate(self):

@@ -65,10 +65,12 @@ class camera():
 
 class hardware():
 	def __init__(self, guid):
+		self.guid = guid
 		self.motor = motor()
 		self.camera = camera()
-		self.x = 0
-		self.y = 0
+		self.__angle = -180
+		self.__x = 0
+		self.__y = 0
 
 	def get_motor(self):
 		return self.motor
@@ -77,7 +79,11 @@ class hardware():
 		return self.camera
 
 	def get_position(self):
-		return (self.x, self.y)
+		return (self.__x, self.__y, self.__angle)
+
+	def set_position(self, x, y):
+		self.__x = x
+		self.__y = y
 
 class ground_truth():
 	def __init__(self, width, height, unit):
@@ -89,8 +95,9 @@ class ground_truth():
 
 	def get_hardware_instance(self, guid):
 		h = hardware(guid)
-		h.x = random.randint(self.unit, self.width-self.unit)
-		h.y = random.randint(self.unit, self.height-self.unit)
+		x = random.randint(self.unit, self.width-self.unit)
+		y = random.randint(self.unit, self.height-self.unit)
+		h.set_position(x, y)
 		self.hardware.append(h)
 		return h
 

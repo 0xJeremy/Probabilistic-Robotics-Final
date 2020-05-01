@@ -15,9 +15,43 @@ class command_generator():
 			if character in ['w', 'a', 's', 'd']:
 				self.actions[self.current_guid] = {
 					'cmd': 'move',
-					'key': character
+					'params': self.__action_parser(character)
 				}
-				print("Issueing Command {}".format(character))
+			elif character == 'm':
+				for key in self.actions.keys():
+					self.actions[key] = {
+						'cmd': shutdown
+					}
+
+	def __action_parser(self, character):
+		if character == 'w':
+			return {
+				'l_orientation': 1,
+				'r_orientation': 1,
+				'l_speed': 10,
+				'r_speed': 10
+			}
+		if character == 's':
+			return {
+				'l_orientation': -1,
+				'r_orientation': -1,
+				'l_speed': 10,
+				'r_speed': 10
+			}
+		if character == 'd':
+			return {
+				'l_orientation': 1,
+				'r_orientation': -1,
+				'l_speed': 10,
+				'r_speed': 10
+			}
+		if character == 'a':
+			return {
+				'l_orientation': -1,
+				'r_orientation': 1,
+				'l_speed': 10,
+				'r_speed': 10
+			}
 
 	def get_action(self, guid):
 		if guid in self.actions.keys():
