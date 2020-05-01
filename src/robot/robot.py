@@ -18,5 +18,8 @@ class Robot():
 			if self.stopped:
 				return
 
+	def step(self):
+		pass
+
 	def stop(self):
 		self.stopped = True
