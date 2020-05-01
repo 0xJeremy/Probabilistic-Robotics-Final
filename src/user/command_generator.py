@@ -29,28 +29,32 @@ class command_generator():
 				'l_orientation': 1,
 				'r_orientation': 1,
 				'l_speed': 10,
-				'r_speed': 10
+				'r_speed': 10,
+				'time': 1
 			}
 		if character == 's':
 			return {
 				'l_orientation': -1,
 				'r_orientation': -1,
 				'l_speed': 10,
-				'r_speed': 10
+				'r_speed': 10,
+				'time': 1
 			}
 		if character == 'd':
 			return {
 				'l_orientation': 1,
 				'r_orientation': -1,
 				'l_speed': 10,
-				'r_speed': 10
+				'r_speed': 10,
+				'time': 1
 			}
 		if character == 'a':
 			return {
 				'l_orientation': -1,
 				'r_orientation': 1,
 				'l_speed': 10,
-				'r_speed': 10
+				'r_speed': 10,
+				'time': 1
 			}
 
 	def get_action(self, guid):

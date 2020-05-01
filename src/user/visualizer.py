@@ -43,10 +43,12 @@ class visualizer():
 		frame = copy.deepcopy(self.frame)
 		positions = self.gt.get_positions()
 		for pos in positions:
-			cv2.circle(frame, (pos[0], pos[1]), GT_SIZE, (255, 0, 0), -1)
+			x = int(pos[0])
+			y = int(pos[1])
+			cv2.circle(frame, (x, y), GT_SIZE, (255, 0, 0), -1)
 			angle = radians(pos[2])
-			x = pos[0] + int(cos(angle)*10)
-			y = pos[1] + int(sin(angle)*10)
+			x += int(cos(angle)*10)
+			y += int(sin(angle)*10)
 			cv2.circle(frame, (x, y), int(GT_SIZE/2), (0, 0, 255), -1)
 
 		return frame

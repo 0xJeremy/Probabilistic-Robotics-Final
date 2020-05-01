@@ -2,6 +2,7 @@
 # from .motor import motor
 from time import time
 import random
+from math import sin, cos, radians
 
 class motor():
 	def __init__(self):
@@ -68,9 +69,16 @@ class hardware():
 		self.guid = guid
 		self.motor = motor()
 		self.camera = camera()
-		self.__angle = -180
+		self.__angle = 0
 		self.__x = 0
 		self.__y = 0
+
+	def run_for_time(self, l_dir, r_dir, l_speed, r_speed, time):
+		r_mag = r_dir * r_speed
+		l_mag = l_dir * l_speed
+		self.__angle += r_mag - l_mag
+		self.__x += r_mag * radians(cos(self.__angle)) * 50
+		self.__y += l_mag * radians(sin(self.__angle)) * 50
 
 	def get_motor(self):
 		return self.motor

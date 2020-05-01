@@ -35,6 +35,13 @@ class Robot():
 		if action['cmd'] is 'shutdown':
 			self.stop()
 		if action['cmd'] is 'move':
+			a = action['params']
+			l_dir = a['l_orientation']
+			r_dir = a['r_orientation']
+			l_speed = a['l_speed']
+			r_speed = a['r_speed']
+			time = a['time']
+			self.hardware.run_for_time(l_dir, r_dir, l_speed, r_speed, time)
 			print("Moving: {} {} {} {}".format(action['params']['l_orientation'], action['params']['r_orientation'], action['params']['l_speed'], action['params']['r_speed']))
 
 
