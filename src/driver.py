@@ -1,5 +1,6 @@
 from robot.robot import Robot
 from user.visualizer import visualizer
+from user.command_generator import generator
 from simulator.ground_truth import ground_truth
 from json import loads
 
@@ -10,12 +11,12 @@ def initialize_bots(gt):
 	global config
 	bots = []
 	for i in range(config['num_bots']):
-		sim = gt.make_robot(guid=i)
+		sim = gt.get_hardware_instance(guid=i)
 		bot = Robot(guid=i,
 					ip=config['bots']['ip'],
 					port=config['bots']['s_port']+i,
-					motor=sim.get_motor(),
-					camera=sim.get_camera()
+					hardware=sim,
+					generator=generator
 			  )
 		bots.append(bot)
 	return bots
@@ -27,13 +28,13 @@ if __name__ == '__main__':
 						  unit=config['sim']['unit'])
 		viz = visualizer(ip=config['viz']['ip'],
 						 port=config['viz']['port'],
-						 ground_truth=gt).start()
+						 ground_truth=gt,
+						 generator=generator).start()
 		bots = initialize_bots(gt)
-		for bot in bots:
-			bot.step()
-		while True:
-			if viz.stopped:
-				break
+		ports = [b.port for b in bots]
+		[b.connect(ports) for b in bots]
+		[b.start() for b in bots]
+		while not viz.stopped:
 			pass
 
 	except KeyboardInterrupt as e:

@@ -63,14 +63,12 @@ class camera():
 	def __init__(self):
 		pass
 
-
-class robot():
+class hardware():
 	def __init__(self, guid):
-		self.guid = guid
+		self.motor = motor()
+		self.camera = camera()
 		self.x = 0
 		self.y = 0
-		self.camera = camera()
-		self.motor = motor()
 
 	def get_motor(self):
 		return self.motor
@@ -86,15 +84,15 @@ class ground_truth():
 		self.width = width
 		self.height = height
 		self.unit = unit
-		self.robots = []
+		self.hardware = []
 		pass
 
-	def make_robot(self, guid):
-		bot = robot(guid)
-		bot.x = random.randint(self.unit, self.width-self.unit)
-		bot.y = random.randint(self.unit, self.height-self.unit)
-		self.robots.append(bot)
-		return bot
+	def get_hardware_instance(self, guid):
+		h = hardware(guid)
+		h.x = random.randint(self.unit, self.width-self.unit)
+		h.y = random.randint(self.unit, self.height-self.unit)
+		self.hardware.append(h)
+		return h
 
 	def get_positions(self):
-		return [bot.get_position() for bot in self.robots]
+		return [h.get_position() for h in self.hardware]
