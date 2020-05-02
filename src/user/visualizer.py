@@ -40,7 +40,7 @@ class visualizer():
 			cv2.imshow("Simulator", frame)
 
 	def generate_frame(self):
-		frame = copy.deepcopy(self.frame)
+		frame = copy.copy(self.frame)
 		positions = self.gt.get_positions()
 		for pos in positions:
 			x = int(pos[0])

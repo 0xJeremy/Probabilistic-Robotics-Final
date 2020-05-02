@@ -26,35 +26,19 @@ class command_generator():
 	def __action_parser(self, character):
 		if character == 'w':
 			return {
-				'l_orientation': 1,
-				'r_orientation': 1,
-				'l_speed': 10,
-				'r_speed': 10,
-				'time': 1
+				'direction': 'forward'
 			}
 		if character == 's':
 			return {
-				'l_orientation': -1,
-				'r_orientation': -1,
-				'l_speed': 10,
-				'r_speed': 10,
-				'time': 1
+				'direction': 'back'
 			}
 		if character == 'd':
 			return {
-				'l_orientation': 1,
-				'r_orientation': -1,
-				'l_speed': 10,
-				'r_speed': 10,
-				'time': 1
+				'direction': 'turn_right'
 			}
 		if character == 'a':
 			return {
-				'l_orientation': -1,
-				'r_orientation': 1,
-				'l_speed': 10,
-				'r_speed': 10,
-				'time': 1
+				'direction': 'turn_left'
 			}
 
 	def get_action(self, guid):

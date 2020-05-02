@@ -73,12 +73,15 @@ class hardware():
 		self.__x = 0
 		self.__y = 0
 
-	def run_for_time(self, l_dir, r_dir, l_speed, r_speed, time):
-		r_mag = r_dir * r_speed
-		l_mag = l_dir * l_speed
-		self.__angle += r_mag - l_mag
-		self.__x += r_mag * radians(cos(self.__angle)) * 50
-		self.__y += l_mag * radians(sin(self.__angle)) * 50
+	def run_for_time(self, direction):
+		speed = 100
+		if direction is 'forward' or direction is 'backward':
+			self.__x += speed * radians(cos(self.__angle))
+			self.__y += speed * radians(sin(self.__angle))
+		elif direction is 'turn_right':
+			self.__angle += 30
+		elif direction is 'turn_left':
+			self.__angle -= 30
 
 	def get_motor(self):
 		return self.motor
