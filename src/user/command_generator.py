@@ -24,22 +24,15 @@ class command_generator():
 					}
 
 	def __action_parser(self, character):
-		if character == 'w':
-			return {
-				'direction': 'forward'
-			}
-		if character == 's':
-			return {
-				'direction': 'back'
-			}
-		if character == 'd':
-			return {
-				'direction': 'turn_right'
-			}
-		if character == 'a':
-			return {
-				'direction': 'turn_left'
-			}
+		action = {
+			'w': 'forward',
+			's': 'back',
+			'd': 'turn_right',
+			'a': 'turn_left'
+		}[character]
+		return {
+			'direction': action
+		}
 
 	def get_action(self, guid):
 		if guid in self.actions.keys():

@@ -75,6 +75,7 @@ class hardware():
 
 	def run_for_time(self, direction):
 		speed = 100
+		origx, origy, origangle = self.__x, self.__y, self.__angle
 		if direction is 'forward' or direction is 'backward':
 			self.__x += speed * radians(cos(self.__angle))
 			self.__y += speed * radians(sin(self.__angle))
@@ -82,6 +83,7 @@ class hardware():
 			self.__angle += 30
 		elif direction is 'turn_left':
 			self.__angle -= 30
+		return (origx-self.__x, origy-self.__y, origangle-self.__angle)
 
 	def get_motor(self):
 		return self.motor
