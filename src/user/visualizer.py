@@ -8,11 +8,12 @@ GT_SIZE = 10
 EST_SIZE = 10
 
 class visualizer():
-	def __init__(self, ip, port, ground_truth, generator):
+	def __init__(self, ip, port, ground_truth, bots, generator):
 		self.ip = ip
 		self.port = port
 		self.gt = ground_truth
 		self.generator = generator
+		self.bots = bots
 		self.width = self.gt.width
 		self.height = self.gt.height
 		self.unit = self.gt.unit
@@ -50,6 +51,9 @@ class visualizer():
 			x += int(cos(angle)*10)
 			y += int(sin(angle)*10)
 			cv2.circle(frame, (x, y), int(GT_SIZE/2), (0, 0, 255), -1)
+		for bot in self.bots:
+			for e in bot.get_estimates():
+				cv2.circle(frame, (int(e.x), int(e.y)), GT_SIZE, (0, 255, 0), -1)
 
 		return frame
 

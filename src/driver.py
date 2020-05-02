@@ -26,11 +26,12 @@ if __name__ == '__main__':
 		gt = ground_truth(width=config['sim']['width'],
 						  height=config['sim']['height'],
 						  unit=config['sim']['unit'])
+		bots = initialize_bots(gt)
 		viz = visualizer(ip=config['viz']['ip'],
 						 port=config['viz']['port'],
 						 ground_truth=gt,
+						 bots=bots,
 						 generator=generator).start()
-		bots = initialize_bots(gt)
 		ports = [b.port for b in bots]
 		[b.connect(ports) for b in bots]
 		[b.start() for b in bots]

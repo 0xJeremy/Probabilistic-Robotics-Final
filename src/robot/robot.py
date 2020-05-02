@@ -38,11 +38,15 @@ class Robot():
 			x, y, theta = self.hardware.run_for_time(action['params']['direction'])
 			self.localization.update(x, y, theta)
 		if action['cmd'] is 'picture':
-			self.hardware.take_picture()
+			images = self.hardware.take_picture()
+			self.localization.localize(images)
 
 
-	def get_estimate(self):
+	def get_self_estimate(self):
 		return self.localization.get_self_estimate()
+
+	def get_estimates(self):
+		return self.localization.get_estimates()
 
 	def connect(self, ports):
 		self.socket.connect(ports)

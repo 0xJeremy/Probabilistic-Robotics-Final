@@ -60,12 +60,19 @@ class motor():
 		for i in id:
 			self.__run(i, 0, 0)
 
+class image():
+	def __init__(self, guid, dimension, angle_from_center):
+		self.guid = guid
+		self.dimension = dimension
+		self.angle = angle_from_center
+
 class camera():
 	def __init__(self, get_all_positions):
 		self.get_all = get_all_positions
 
 	def get_image(self):
-		print(self.get_all())
+		i = image(2, 2, 30)
+		return [i]
 
 
 class hardware():
@@ -96,13 +103,13 @@ class hardware():
 		return self.camera
 
 	def take_picture(self):
-		self.camera.get_image()
+		return self.camera.get_image()
 
 	def get_position(self):
 		return (self.__x, self.__y, self.__angle)
 
 	def get_all_data(self):
-		return (self.__x, self.__y, self.__angle)
+		return (self.guid, self.__x, self.__y, self.__angle)
 
 	def set_position(self, x, y):
 		self.__x = x
