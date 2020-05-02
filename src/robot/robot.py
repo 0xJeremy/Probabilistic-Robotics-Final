@@ -44,7 +44,6 @@ class Robot():
 			images = self.hardware.take_picture()
 			self.localization.localize(images)
 
-
 	def get_self_estimate(self):
 		return self.localization.get_self_estimate()
 

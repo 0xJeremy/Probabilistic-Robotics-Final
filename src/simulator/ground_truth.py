@@ -2,7 +2,7 @@
 # from .motor import motor
 from time import time
 import random
-from math import sin, cos, radians, sqrt
+from math import sin, cos, radians, sqrt, tanh, degrees
 
 class motor():
 	def __init__(self):
@@ -40,7 +40,6 @@ class motor():
 			self.speed[id] = orientation*speed
 			self.run_time[id] = time()
 
-
 	def motor_movement(self, id, orientation, speed):
 		for i in id:
 			self.__run(i, orientation, speed)
@@ -66,19 +65,38 @@ class image():
 		self.dimension = dimension
 		self.angle = angle_from_center
 
-def visible(reference, other):
-	diff_x = other.x - reference.x
-	diff_y = other.y - reference.y
+def visible(ref, other):
+	diff_x = other.x - ref.x
+	diff_y = other.y - ref.y
 	if sqrt(diff_x**2 + diff_y**2) > 500:
 		return False
+	angle = degrees(tanh(diff_y / diff_x))
+	diff_angle = (abs(angle) % 360) - (abs(ref.angle) % 360)
+	if diff_angle < 45:
+		return True
+	return False
+
+def construct_image(ref, other):
+	diff_x = other.x - ref.x
+	diff_y = other.y - ref.y
+	distance = sqrt(diff_x**2 + diff_y**2)
+	angle = degrees(tanh(diff_y / diff_x))
+	return image(other.guid, SIZE/distance, angle)
 
 class camera():
 	def __init__(self, get_all_positions):
 		self.get_all = get_all_positions
 
 	def get_image(self):
-		i = image(2, 2, 30)
-		return [i]
+		ref = self.get_ref
+		others = self.get_all
+		seen = []
+		for other in others:
+			if ref.guid is other.guid:
+				continue
+			if visible(ref, other):
+				seen.append(construct_image(ref, other))
+		return seen
 
 
 class hardware():
