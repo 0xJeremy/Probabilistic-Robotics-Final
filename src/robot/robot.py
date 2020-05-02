@@ -37,7 +37,8 @@ class Robot():
 		if action['cmd'] is 'move':
 			x, y, theta = self.hardware.run_for_time(action['params']['direction'])
 			self.localization.update(x, y, theta)
-			# print("Moving: {} {} {} {}".format(action['params']['l_orientation'], action['params']['r_orientation'], action['params']['l_speed'], action['params']['r_speed']))
+		if action['cmd'] is 'picture':
+			self.hardware.take_picture()
 
 
 	def get_estimate(self):

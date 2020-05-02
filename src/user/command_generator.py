@@ -17,6 +17,10 @@ class command_generator():
 					'cmd': 'move',
 					'params': self.__action_parser(character)
 				}
+			elif character == 'p':
+				self.actions[self.current_guid] = {
+					'cmd': 'picture'
+				}
 			elif character == 'm':
 				for key in self.actions.keys():
 					self.actions[key] = {

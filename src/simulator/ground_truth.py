@@ -61,20 +61,24 @@ class motor():
 			self.__run(i, 0, 0)
 
 class camera():
-	def __init__(self):
-		pass
+	def __init__(self, get_all_positions):
+		self.get_all = get_all_positions
+
+	def get_image(self):
+		print(self.get_all())
+
 
 class hardware():
-	def __init__(self, guid):
+	def __init__(self, guid, get_all_positions):
 		self.guid = guid
 		self.motor = motor()
-		self.camera = camera()
+		self.camera = camera(get_all_positions)
 		self.__angle = 0
 		self.__x = 0
 		self.__y = 0
 
 	def run_for_time(self, direction):
-		speed = 100
+		speed = 500
 		origx, origy, origangle = self.__x, self.__y, self.__angle
 		if direction is 'forward' or direction is 'backward':
 			self.__x += speed * radians(cos(self.__angle))
@@ -91,7 +95,13 @@ class hardware():
 	def get_camera(self):
 		return self.camera
 
+	def take_picture(self):
+		self.camera.get_image()
+
 	def get_position(self):
+		return (self.__x, self.__y, self.__angle)
+
+	def get_all_data(self):
 		return (self.__x, self.__y, self.__angle)
 
 	def set_position(self, x, y):
@@ -107,12 +117,15 @@ class ground_truth():
 		pass
 
 	def get_hardware_instance(self, guid):
-		h = hardware(guid)
+		h = hardware(guid, self.get_all_data)
 		x = random.randint(self.unit, self.width-self.unit)
 		y = random.randint(self.unit, self.height-self.unit)
 		h.set_position(x, y)
 		self.hardware.append(h)
 		return h
+
+	def get_all_data(self):
+		return [h.get_all_data() for h in self.hardware]
 
 	def get_positions(self):
 		return [h.get_position() for h in self.hardware]
