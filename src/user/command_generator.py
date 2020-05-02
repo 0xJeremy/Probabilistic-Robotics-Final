@@ -30,7 +30,7 @@ class command_generator():
 	def __action_parser(self, character):
 		action = {
 			'w': 'forward',
-			's': 'back',
+			's': 'backward',
 			'd': 'turn_right',
 			'a': 'turn_left'
 		}[character]

@@ -16,7 +16,8 @@ def initialize_bots(gt):
 					ip=config['bots']['ip'],
 					port=config['bots']['s_port']+i,
 					hardware=sim,
-					generator=generator
+					generator=generator,
+					connect=config['bots']['connect']
 			  )
 		bots.append(bot)
 	return bots

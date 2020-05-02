@@ -6,7 +6,8 @@
 	},
 	"bots": {
 		"ip": "127.0.0.1",
-		"s_port": 8080
+		"s_port": 8080,
+		"connect": false
 	},
 	"sim": {
 		"width": 700,

@@ -2,7 +2,7 @@
 # from .motor import motor
 from time import time
 import random
-from math import sin, cos, radians
+from math import sin, cos, radians, sqrt
 
 class motor():
 	def __init__(self):
@@ -66,6 +66,12 @@ class image():
 		self.dimension = dimension
 		self.angle = angle_from_center
 
+def visible(reference, other):
+	diff_x = other.x - reference.x
+	diff_y = other.y - reference.y
+	if sqrt(diff_x**2 + diff_y**2) > 500:
+		return False
+
 class camera():
 	def __init__(self, get_all_positions):
 		self.get_all = get_all_positions
@@ -80,21 +86,24 @@ class hardware():
 		self.guid = guid
 		self.motor = motor()
 		self.camera = camera(get_all_positions)
-		self.__angle = 0
-		self.__x = 0
-		self.__y = 0
+		self.angle = 0
+		self.x = 0
+		self.y = 0
 
 	def run_for_time(self, direction):
 		speed = 500
-		origx, origy, origangle = self.__x, self.__y, self.__angle
-		if direction is 'forward' or direction is 'backward':
-			self.__x += speed * radians(cos(self.__angle))
-			self.__y += speed * radians(sin(self.__angle))
+		origx, origy, origangle = self.x, self.y, self.angle
+		if direction is 'forward':
+			self.x += speed * radians(cos(self.angle))
+			self.y += speed * radians(sin(self.angle))
+		elif direction is 'backward':
+			self.x -= speed * radians(cos(self.angle))
+			self.y -= speed * radians(sin(self.angle))
 		elif direction is 'turn_right':
-			self.__angle += 30
+			self.angle += 30
 		elif direction is 'turn_left':
-			self.__angle -= 30
-		return (origx-self.__x, origy-self.__y, origangle-self.__angle)
+			self.angle -= 30
+		return (origx-self.x, origy-self.y, origangle-self.angle)
 
 	def get_motor(self):
 		return self.motor
@@ -106,14 +115,14 @@ class hardware():
 		return self.camera.get_image()
 
 	def get_position(self):
-		return (self.__x, self.__y, self.__angle)
+		return (self.x, self.y, self.angle)
 
 	def get_all_data(self):
-		return (self.guid, self.__x, self.__y, self.__angle)
+		return (self.guid, self.x, self.y, self.angle)
 
 	def set_position(self, x, y):
-		self.__x = x
-		self.__y = y
+		self.x = x
+		self.y = y
 
 class ground_truth():
 	def __init__(self, width, height, unit):

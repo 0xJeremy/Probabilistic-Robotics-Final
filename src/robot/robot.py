@@ -3,12 +3,14 @@ from .localization_engine import localization_engine
 from threading import Thread
 
 class Robot():
-	def __init__(self, guid, ip, port, hardware, generator):
+	def __init__(self, guid, ip, port, hardware, generator, connect):
 		self.guid = guid
 		self.hardware = hardware
 		self.action_generator = generator
 		self.port = port
-		self.socket = communication_engine(guid, ip, port)
+		self.connected = connect
+		if connect:
+			self.socket = communication_engine(guid, ip, port)
 		self.localization = localization_engine()
 		self.stopped = False
 
@@ -24,7 +26,8 @@ class Robot():
 			self.step()
 
 	def __shutdown(self):
-		self.socket.close()
+		if self.connected:
+			self.socket.close()
 
 	def step(self):
 		action = self.action_generator.get_action(self.guid)
@@ -49,7 +52,8 @@ class Robot():
 		return self.localization.get_estimates()
 
 	def connect(self, ports):
-		self.socket.connect(ports)
+		if self.connected:
+			self.socket.connect(ports)
 
 	def stop(self):
 		self.stopped = True
