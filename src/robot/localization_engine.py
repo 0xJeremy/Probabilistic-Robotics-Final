@@ -12,7 +12,7 @@ class estimate():
 		# TODO: Find heading other relative bot
 		# self.angle = angle
 
-SIZE = 100
+SIZE = 200
 
 class localization_engine():
 	def __init__(self):

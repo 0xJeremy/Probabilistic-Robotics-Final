@@ -70,12 +70,15 @@ def visible(ref, other):
 	diff_y = other.y - ref.y
 	if sqrt(diff_x**2 + diff_y**2) > 500:
 		return False
+	print("distance: {}".format(sqrt(diff_x**2 + diff_y**2)))
 	angle = degrees(tanh(diff_y / diff_x))
+	print("angle: {}".format(angle))
 	diff_angle = (abs(angle) % 360) - (abs(ref.angle) % 360)
 	if diff_angle < 45:
 		return True
 	return False
 
+SIZE = 200
 def construct_image(ref, other):
 	diff_x = other.x - ref.x
 	diff_y = other.y - ref.y
@@ -84,12 +87,13 @@ def construct_image(ref, other):
 	return image(other.guid, SIZE/distance, angle)
 
 class camera():
-	def __init__(self, get_all_positions):
-		self.get_all = get_all_positions
+	def __init__(self, self_hardware, get_hardware):
+		self.hardware = self_hardware
+		self.get_hardware = get_hardware
 
 	def get_image(self):
-		ref = self.get_ref
-		others = self.get_all
+		ref = self.hardware
+		others = self.get_hardware()
 		seen = []
 		for other in others:
 			if ref.guid is other.guid:
@@ -100,10 +104,10 @@ class camera():
 
 
 class hardware():
-	def __init__(self, guid, get_all_positions):
+	def __init__(self, guid, get_all_hardware):
 		self.guid = guid
 		self.motor = motor()
-		self.camera = camera(get_all_positions)
+		self.camera = camera(self, get_all_hardware)
 		self.angle = 0
 		self.x = 0
 		self.y = 0
@@ -142,6 +146,10 @@ class hardware():
 		self.x = x
 		self.y = y
 
+
+STARTING_X = [150, 200]
+STARTING_Y = [500, 500]
+
 class ground_truth():
 	def __init__(self, width, height, unit):
 		self.width = width
@@ -151,15 +159,17 @@ class ground_truth():
 		pass
 
 	def get_hardware_instance(self, guid):
-		h = hardware(guid, self.get_all_data)
-		x = random.randint(self.unit, self.width-self.unit)
-		y = random.randint(self.unit, self.height-self.unit)
+		h = hardware(guid, self.get_all_hardware)
+		x = STARTING_X[guid]
+		y = STARTING_Y[guid]
+		# x = random.randint(self.unit, self.width-self.unit)
+		# y = random.randint(self.unit, self.height-self.unit)
 		h.set_position(x, y)
 		self.hardware.append(h)
 		return h
 
-	def get_all_data(self):
-		return [h.get_all_data() for h in self.hardware]
+	def get_all_hardware(self):
+		return self.hardware
 
 	def get_positions(self):
 		return [h.get_position() for h in self.hardware]
