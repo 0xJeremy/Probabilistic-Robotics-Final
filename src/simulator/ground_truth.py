@@ -76,15 +76,15 @@ def angle(ref, other):
 	if diff_y == 0:
 		return 0 if diff_x > 0 else 180
 	if diff_x == 0:
-		return 90 if diff_y > 0 else -90
+		return 90 if diff_y > 0 else 270
 
 	if diff_x > 0:
-		return degrees(atan(diff_y / diff_x))
+		if diff_y > 0:
+			return degrees(atan(diff_y / diff_x))
+		return degrees(atan(diff_y / diff_x)) + 360
 
-	if diff_y > 0:
-		return -1*degrees(atan(diff_y / diff_x)) + 90
+	return degrees(atan(diff_y / diff_x)) + 180
 
-	return -1*degrees(atan(diff_y / diff_x)) - 90
 
 MAX_DISTANCE = 500
 MAX_ANGLE = 45
@@ -93,8 +93,10 @@ def visible(ref, other):
 	if d > MAX_DISTANCE:
 		return False
 	a = angle(ref, other)
-	print("angle: {}".format(a))
-	diff_angle = abs(abs(a) - abs(ref.angle)) % 360
+	print("rel angle: {}".format(a))
+	# print("ref angle: {}".format(ref.angle))
+	diff_angle = a - ref.angle
+	# diff_angle = abs(abs(a) - abs(ref.angle)) % 360
 	# Works for bot 2
 	# diff_angle = (a - abs(ref.angle)) % 360
 	print("diff angle: {}".format(diff_angle))
@@ -120,7 +122,6 @@ class camera():
 		for other in others:
 			if ref.guid is other.guid:
 				continue
-			print("Ref id:", ref.guid)
 			if visible(ref, other):
 				seen.append(construct_image(ref, other))
 		print("Seen length {}".format(len(seen)))
@@ -128,7 +129,7 @@ class camera():
 		return seen
 
 SPEED = 50
-ANGLE = 30
+ANGLE = 90
 class hardware():
 	def __init__(self, guid, get_all_hardware):
 		self.guid = guid
@@ -149,6 +150,7 @@ class hardware():
 		self.x += diff_x
 		self.y += diff_y
 		self.angle += diff_angle
+		self.angle %= 360
 		return diff_x, diff_y, diff_angle
 
 	def get_motor(self):
