@@ -11,7 +11,7 @@ class Robot():
 		self.connected = connect
 		if connect:
 			self.socket = communication_engine(guid, ip, port)
-		self.localization = localization_engine(self.hardware.x, self.hardware.y)
+		self.localization = localization_engine(guid, self.hardware.x, self.hardware.y)
 		self.stopped = False
 
 	def start(self):
@@ -45,13 +45,16 @@ class Robot():
 			self.localization.localize(images)
 		if action['cmd'] is 'localize':
 			if self.connected:
-				self.socket.write_all_estimates(self.get_estimates())
+				self.socket.write_all_estimates(self.get_writable_estimates())
 		if action['cmd'] is 'read_data':
 			if self.connected:
 				self.localization.update_estimates(self.socket.get_all_estimates())
 
 	def get_self_estimate(self):
 		return self.localization.get_self_estimate()
+
+	def get_writable_estimates(self):
+		return self.localization.get_writable_estimates()
 
 	def get_estimates(self):
 		return self.localization.get_estimates()

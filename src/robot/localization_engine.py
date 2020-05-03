@@ -4,64 +4,44 @@ from numpy.linalg import pinv
 from math import sin, cos, radians, sqrt
 import copy
 
-class absolute_estimate():
-	def __init__(self, guid, x, y, distance, visible=True):
-		self.guid = guid
-		self.dx = x
-		self.dy = y
-		self.distance = distance
-		self.visible = visible
-
-
 class estimate():
 	LOCAL = 1
 	REMOTE = 2
-	def __init__(self, guid, x, y, type=LOCAL, visible=True):
-		self.guid = guid
-		self.dx = x
-		self.dy = y
+	def __init__(self, p_guid, r_guid, x, y, dx, dy, type=LOCAL, visible=True):
+		self.personal_guid = p_guid
+		self.remote_guid = r_guid
+		self.x = x
+		self.y = y
+		self.dx = dx
+		self.dy = dy
 		self.type = type
 		self.distance = sqrt(x**2 + y**2)
 		self.visible = visible
 
-	def serialize(self):
-		return {
-			'guid': self.guid,
-			'dx': self.dx,
-			'dy': self.dy,
-			'type': self.type
-			'distance': self.distance,
-			'visible': self.visible
-		}
+	def islocal(self):
+		return self.type == estimate.LOCAL
 
-class relative_estimate():
-	def __init__(self, guid, x, y, distance, visible=True):
-		self.guid = guid
-		self.dx = x
-		self.dy = y
-		self.distance = distance
-		self.visible = visible
+	def isremote(self):
+		return self.type == estimate.REMOTE
 
 	def serialize(self):
 		return {
-			'guid': self.guid,
+			'personal_guid': self.personal_guid,
+			'remote_guid': self.remote_guid,
 			'x': self.x,
 			'y': self.y,
+			'dx': self.dx,
+			'dy': self.dy,
+			'type': self.type,
 			'distance': self.distance,
 			'visible': self.visible
 		}
-
-class remote_estimate():
-	def __init__(self, e):
-		self.x = e
-
-def deserialize_estimate(e):
-	return estimate(e['guid'], e['x'], e['y'], e['distance'], e['visible'])
 
 SIZE = 200
 
 class localization_engine():
-	def __init__(self, x, y):
+	def __init__(self, guid, x, y):
+		self.guid = guid
 		self.x = x
 		self.y = y
 		self.angle = 0
@@ -83,35 +63,44 @@ class localization_engine():
 	def get_estimates(self):
 		return self.estimates.values()
 
+	def get_writable_estimates(self):
+		return [e.serialize() for e in self.estimates.values()]
+
 	def get_absolute_estimates(self):
 		return self.absolute_estimates.values()
 
 	def get_relative_estimates(self):
-		self.absolute_estimates = {}
-		for key in self.absolute_estimates.keys():
-			absolute = self.absolute_estimates[key]
-			rel_x = absolute - self.x
-			rel_y = absolute - self.y
-			distance = absolute.distance
-			visible = absolute.visible
-			self.relative_estimates[key] = relative_estimate(rel_y, rel_y, distance, visible)
-		return self.absolute_estimates.values()
+		pass
 
 	def localize(self, images):
 		for key in self.estimates:
 			self.estimates[key].visible = False
 		for image in images:
 			distance = SIZE/image.dimension
-			x = distance * cos(radians(image.angle))
-			y = distance * sin(radians(image.angle))
-			self.estimates[image.guid] = estimate(image.guid, x, y)
+			dx = distance * cos(radians(image.angle))
+			dy = distance * sin(radians(image.angle))
+			est = estimate(
+					p_guid=self.guid,
+					r_guid=image.guid,
+					x=self.x,
+					y=self.y,
+					dx=dx,
+					dy=dy,
+					type=estimate.LOCAL
+				)
+			self.estimates[image.guid] = est
 
 	def update_estimates(self, estimates):
 		self.seen = {}
 		print("Estimates: {}".format(estimates))
-		for estimate in estimates:
-			e = estimate['estimates']
-			self.seen[estimate['guid']] = []
-			for item in e:
-				self.seen[estimate['guid']].append(deserialize_estimate(item))
-		print(self.seen)
+		for e in estimates:
+			est = estimate(
+					p_guid=self.guid,
+					r_guid=e['personal_guid'],
+					x=self.x,
+					y=self.y,
+					dx=-e['dx'],
+					dy=-e['dy'],
+					type=estimate.REMOTE
+				)
+			self.estimates[e['personal_guid']] = est
