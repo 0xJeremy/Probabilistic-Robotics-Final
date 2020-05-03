@@ -1,13 +1,13 @@
 from robot.robot import Robot
 from user.visualizer import visualizer
-from user.command_generator import generator
+from user.command_generator import command_generator
 from simulator.ground_truth import ground_truth
 from json import loads
 
 with open('config.json', 'r') as f:
 	config = loads(f.read())
 
-def initialize_bots(gt):
+def initialize_bots(gt, generator):
 	global config
 	bots = []
 	for i in range(config['num_bots']):
@@ -24,10 +24,11 @@ def initialize_bots(gt):
 
 if __name__ == '__main__':
 	try:
+		generator = command_generator(config['num_bots'])
 		gt = ground_truth(width=config['sim']['width'],
 						  height=config['sim']['height'],
 						  unit=config['sim']['unit'])
-		bots = initialize_bots(gt)
+		bots = initialize_bots(gt, generator)
 		viz = visualizer(ip=config['viz']['ip'],
 						 port=config['viz']['port'],
 						 ground_truth=gt,

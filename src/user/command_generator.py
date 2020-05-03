@@ -1,7 +1,7 @@
 class command_generator():
-	def __init__(self):
+	def __init__(self, num_bots):
 		self.current_guid = 0
-		self.actions = {}
+		self.actions = {i:None for i in range(num_bots)}
 
 	def give_key(self, key):
 		if key == -1:
@@ -49,5 +49,3 @@ class command_generator():
 		else:
 			ret = None
 		return ret
-
-generator = command_generator()

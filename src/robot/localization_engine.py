@@ -4,12 +4,12 @@ from numpy.linalg import pinv
 from math import sin, cos, radians
 
 class estimate():
-	def __init__(self, guid, x, y, distance):
+	def __init__(self, guid, x, y, distance, visible=True):
 		self.guid = guid
 		self.x = x
 		self.y = y
 		self.distance = distance
-		self.visible = True
+		self.visible = visible
 
 	def serialize(self):
 		return {
@@ -20,6 +20,9 @@ class estimate():
 			'visible': self.visible
 		}
 
+def deserialize_estimate(e):
+	return estimate(e['guid'], e['x'], e['y'], e['distance'], e['visible'])
+
 SIZE = 200
 
 class localization_engine():
@@ -28,6 +31,7 @@ class localization_engine():
 		self.y = y
 		self.angle = 0
 		self.botmatrix = {}
+		self.seen = {}
 
 	def get_self_estimate(self):
 		return (self.x, self.y)
@@ -59,14 +63,27 @@ class localization_engine():
 	def get_estimates(self):
 		return self.botmatrix.values()
 
+	def get_absolute_estimates(self):
+		estimates = self.botmatrix.values()
+		for e in estimates:
+			e.x += self.x
+			e.y += self.y
+		return estimates
+
 	def localize(self, images):
 		for key in self.botmatrix:
 			self.botmatrix[key].visible = False
 		for image in images:
 			distance = SIZE/image.dimension
-			x = distance * cos(radians(image.angle)) + self.x
-			y = distance * sin(radians(image.angle)) + self.y
+			x = distance * cos(radians(image.angle))
+			y = distance * sin(radians(image.angle))
 			self.botmatrix[image.guid] = estimate(image.guid, x, y, distance)
 
 	def update_estimates(self, estimates):
-		pass
+		self.seen = {}
+		for estimate in estimates:
+			e = estimate['estimates']
+			self.seen[estimate['guid']] = []
+			for item in e:
+				self.seen[estimate['guid']].append(deserialize_estimate(item))
+		print(self.seen)

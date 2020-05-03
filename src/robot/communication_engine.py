@@ -1,5 +1,5 @@
 from socketengine import hub
-from json import dumps
+from json import dumps, loads
 
 CHANNEL = 'estimates'
 
@@ -18,7 +18,6 @@ class communication_engine():
 			if port not in conn_ports and port != self.port:
 				self.socket.connect(str(self.names), self.addr, port)
 				self.names += 1
-				print("Connected")
 
 	def write_all_estimates(self, estimates):
 		text = [e.serialize() for e in estimates]
@@ -26,13 +25,11 @@ class communication_engine():
 			'guid': self.guid,
 			'estimates': text
 		})
-		print("Writing {}".format(data))
 		self.socket.write_all(CHANNEL, data)
 
 	def get_all_estimates(self):
-		e = self.socket.get_all(CHANNEL)
-		print("Reading: {}".format(e))
-		return e
+		estimates = self.socket.get_all(CHANNEL)
+		return [loads(e) for e in estimates]
 
 	def close(self):
 		self.socket.close()
