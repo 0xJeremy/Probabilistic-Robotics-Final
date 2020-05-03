@@ -73,8 +73,18 @@ def distance(ref, other):
 def angle(ref, other):
 	diff_x = other.x - ref.x
 	diff_y = other.y - ref.y
-	ad = 0 if diff_x > 0 else 180
-	return ad + degrees(atan(diff_y / diff_x))
+	if diff_y == 0:
+		return 0 if diff_x > 0 else 180
+	if diff_x == 0:
+		return 90 if diff_y > 0 else -90
+
+	if diff_x > 0:
+		return degrees(atan(diff_y / diff_x))
+
+	if diff_y > 0:
+		return -1*degrees(atan(diff_y / diff_x)) + 90
+
+	return -1*degrees(atan(diff_y / diff_x)) - 90
 
 MAX_DISTANCE = 500
 MAX_ANGLE = 45
@@ -82,12 +92,13 @@ def visible(ref, other):
 	d = distance(ref, other)
 	if d > MAX_DISTANCE:
 		return False
-	print("distance: {}".format(d))
 	a = angle(ref, other)
 	print("angle: {}".format(a))
-	diff_angle = a - abs(ref.angle)
+	diff_angle = abs(abs(a) - abs(ref.angle)) % 360
+	# Works for bot 2
+	# diff_angle = (a - abs(ref.angle)) % 360
 	print("diff angle: {}".format(diff_angle))
-	if abs(diff_angle) < MAX_ANGLE:
+	if abs(diff_angle) <= MAX_ANGLE:
 		return True
 	return False
 
@@ -107,9 +118,9 @@ class camera():
 		others = self.get_hardware()
 		seen = []
 		for other in others:
-			print("Ref id:", ref.guid)
 			if ref.guid is other.guid:
 				continue
+			print("Ref id:", ref.guid)
 			if visible(ref, other):
 				seen.append(construct_image(ref, other))
 		print("Seen length {}".format(len(seen)))
@@ -160,7 +171,7 @@ class hardware():
 		self.y = y
 
 
-STARTING_X = [125, 200]
+STARTING_X = [100, 200]
 STARTING_Y = [500, 500]
 
 class ground_truth():
