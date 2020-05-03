@@ -46,11 +46,13 @@ class localization_engine():
 		self.x += x
 		self.y += y
 		self.angle += angle
+		self.angle %= 360
 
 	def get_estimates(self):
 		return self.botmatrix.values()
 
 	def localize(self, images):
+		self.botmatrix = {}
 		for image in images:
 			distance = SIZE/image.dimension
 			x = distance * cos(radians(image.angle)) + self.x

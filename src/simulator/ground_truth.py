@@ -73,8 +73,8 @@ def distance(ref, other):
 def angle(ref, other):
 	diff_x = other.x - ref.x
 	diff_y = other.y - ref.y
-	print("diff x: {}, diff y: {}".format(diff_x, diff_y))
-	return degrees(atan(diff_y / diff_x))
+	ad = 0 if diff_x > 0 else 180
+	return ad + degrees(atan(diff_y / diff_x))
 
 MAX_DISTANCE = 500
 MAX_ANGLE = 45
@@ -85,9 +85,9 @@ def visible(ref, other):
 	print("distance: {}".format(d))
 	a = angle(ref, other)
 	print("angle: {}".format(a))
-	diff_angle = a - ref.angle
+	diff_angle = a - abs(ref.angle)
 	print("diff angle: {}".format(diff_angle))
-	if diff_angle < MAX_ANGLE:
+	if abs(diff_angle) < MAX_ANGLE:
 		return True
 	return False
 
@@ -112,6 +112,8 @@ class camera():
 				continue
 			if visible(ref, other):
 				seen.append(construct_image(ref, other))
+		print("Seen length {}".format(len(seen)))
+		print()
 		return seen
 
 SPEED = 50

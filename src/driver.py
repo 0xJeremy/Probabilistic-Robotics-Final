@@ -32,12 +32,15 @@ if __name__ == '__main__':
 						 port=config['viz']['port'],
 						 ground_truth=gt,
 						 bots=bots,
-						 generator=generator).start()
+						 generator=generator)
+		if config['viz']['threaded']:
+			viz.start()
 		ports = [b.port for b in bots]
 		[b.connect(ports) for b in bots]
 		[b.start() for b in bots]
 		while not viz.stopped:
-			pass
+			if not config['viz']['threaded']:
+				viz.run()
 
 	except KeyboardInterrupt as e:
 		print(e)

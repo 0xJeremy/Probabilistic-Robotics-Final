@@ -25,20 +25,23 @@ class visualizer():
 			cv2.line(self.frame, (0, u), (self.height, u), (100, 100, 100), 1, 1)
 
 	def start(self):
-		Thread(target=self.run, args=()).start()
+		Thread(target=self.__thread_run, args=()).start()
 		return self
 
-	def run(self):
+	def __thread_run(self):
 		while True:
-			if self.stopped:
-				cv2.destroyAllWindows()
-				return
-			key = cv2.waitKey(1)
-			if key == ord('q'):
-				self.stop()
-			self.generator.give_key(key)
-			frame = self.generate_frame()
-			cv2.imshow("Simulator", frame)
+			self.run()
+
+	def run(self):
+		if self.stopped:
+			cv2.destroyAllWindows()
+			return
+		key = cv2.waitKey(1)
+		if key == ord('q'):
+			self.stop()
+		self.generator.give_key(key)
+		frame = self.generate_frame()
+		cv2.imshow("Simulator", frame)
 
 	def generate_frame(self):
 		frame = copy.copy(self.frame)
