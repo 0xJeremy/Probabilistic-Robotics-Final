@@ -2,7 +2,7 @@
 # from .motor import motor
 from time import time
 import random
-from math import sin, cos, radians, sqrt, tanh, degrees
+from math import sin, cos, radians, sqrt, atan, degrees
 
 class motor():
 	def __init__(self):
@@ -73,19 +73,21 @@ def distance(ref, other):
 def angle(ref, other):
 	diff_x = other.x - ref.x
 	diff_y = other.y - ref.y
-	mult = 1 if diff_x > 0 else -1
-	return mult * degrees(tanh(diff_y / diff_x))
+	print("diff x: {}, diff y: {}".format(diff_x, diff_y))
+	return degrees(atan(diff_y / diff_x))
 
+MAX_DISTANCE = 500
+MAX_ANGLE = 45
 def visible(ref, other):
 	d = distance(ref, other)
-	if d > 500:
+	if d > MAX_DISTANCE:
 		return False
 	print("distance: {}".format(d))
 	a = angle(ref, other)
 	print("angle: {}".format(a))
 	diff_angle = a - ref.angle
 	print("diff angle: {}".format(diff_angle))
-	if diff_angle < 45:
+	if diff_angle < MAX_ANGLE:
 		return True
 	return False
 
@@ -112,7 +114,8 @@ class camera():
 				seen.append(construct_image(ref, other))
 		return seen
 
-
+SPEED = 50
+ANGLE = 30
 class hardware():
 	def __init__(self, guid, get_all_hardware):
 		self.guid = guid
@@ -123,19 +126,17 @@ class hardware():
 		self.y = 0
 
 	def run_for_time(self, direction):
-		speed = 500
-		origx, origy, origangle = self.x, self.y, self.angle
-		if direction is 'forward':
-			self.x += speed * radians(cos(self.angle))
-			self.y += speed * radians(sin(self.angle))
-		elif direction is 'backward':
-			self.x -= speed * radians(cos(self.angle))
-			self.y -= speed * radians(sin(self.angle))
-		elif direction is 'turn_right':
-			self.angle += 30
-		elif direction is 'turn_left':
-			self.angle -= 30
-		return (origx-self.x, origy-self.y, self.angle-origangle)
+		diff_x, diff_y, diff_angle = 0, 0, 0
+		if direction is 'forward' or direction is 'backward':
+			mult = 1 if direction is 'forward' else -1
+			diff_x = mult * SPEED * cos(radians(self.angle))
+			diff_y = mult * SPEED * sin(radians(self.angle))
+		if direction is 'turn_right' or direction is 'turn_left':
+			diff_angle = ANGLE if direction is 'turn_right' else -ANGLE
+		self.x += diff_x
+		self.y += diff_y
+		self.angle += diff_angle
+		return diff_x, diff_y, diff_angle
 
 	def get_motor(self):
 		return self.motor
