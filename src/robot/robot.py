@@ -45,7 +45,7 @@ class Robot():
 			self.localization.localize(images)
 		if action['cmd'] is 'localize':
 			if self.connected:
-				self.socket.write_all_estimates(self.localization.get_estimates())
+				self.socket.write_all_estimates(self.get_estimates())
 		if action['cmd'] is 'read_data':
 			if self.connected:
 				self.localization.update_estimates(self.socket.get_all_estimates())
@@ -55,6 +55,12 @@ class Robot():
 
 	def get_estimates(self):
 		return self.localization.get_estimates()
+
+	def get_absolute_estimates(self):
+		return self.localization.get_absolute_estimates()
+
+	def get_relative_estimates(self):
+		return self.localization.get_relative_estimates()
 
 	def connect(self, ports):
 		if self.connected:

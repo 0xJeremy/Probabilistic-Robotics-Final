@@ -55,12 +55,13 @@ class visualizer():
 			y += int(sin(angle)*10)
 			cv2.circle(frame, (x, y), int(GT_SIZE/2), (0, 0, 255), -1)
 		for bot in self.bots:
-			for e in bot.get_absolute_estimates():
+			x, y = bot.get_self_estimate()
+			for e in bot.get_estimates():
 				if e.visible:
 					color = (0, 255, 0)
 				else:
 					color = (0, 140, 255)
-				cv2.circle(frame, (int(e.x), int(e.y)), GT_SIZE, color, -1)
+				cv2.circle(frame, (int(x+e.dx), int(y+e.dy)), GT_SIZE, color, -1)
 
 		return frame
 

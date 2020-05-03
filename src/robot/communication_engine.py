@@ -20,16 +20,23 @@ class communication_engine():
 				self.names += 1
 
 	def write_all_estimates(self, estimates):
+		print(estimates)
 		text = [e.serialize() for e in estimates]
 		data = dumps({
-			'guid': self.guid,
+			'reporter': self.guid,
 			'estimates': text
 		})
+		print("Writing {}".format(data))
 		self.socket.write_all(CHANNEL, data)
+
+	def __reduce_data(self, data):
+		print("Reduce: {}".format(data))
+		return data
 
 	def get_all_estimates(self):
 		estimates = self.socket.get_all(CHANNEL)
-		return [loads(e) for e in estimates]
+		estimates = [loads(e) for e in estimates]
+		return self.__reduce_data(estimates)
 
 	def close(self):
 		self.socket.close()

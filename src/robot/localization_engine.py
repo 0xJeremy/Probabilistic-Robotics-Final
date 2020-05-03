@@ -1,13 +1,44 @@
 import numpy as np
 from numpy import matrix
 from numpy.linalg import pinv
-from math import sin, cos, radians
+from math import sin, cos, radians, sqrt
+import copy
 
-class estimate():
+class absolute_estimate():
 	def __init__(self, guid, x, y, distance, visible=True):
 		self.guid = guid
-		self.x = x
-		self.y = y
+		self.dx = x
+		self.dy = y
+		self.distance = distance
+		self.visible = visible
+
+
+class estimate():
+	LOCAL = 1
+	REMOTE = 2
+	def __init__(self, guid, x, y, type=LOCAL, visible=True):
+		self.guid = guid
+		self.dx = x
+		self.dy = y
+		self.type = type
+		self.distance = sqrt(x**2 + y**2)
+		self.visible = visible
+
+	def serialize(self):
+		return {
+			'guid': self.guid,
+			'dx': self.dx,
+			'dy': self.dy,
+			'type': self.type
+			'distance': self.distance,
+			'visible': self.visible
+		}
+
+class relative_estimate():
+	def __init__(self, guid, x, y, distance, visible=True):
+		self.guid = guid
+		self.dx = x
+		self.dy = y
 		self.distance = distance
 		self.visible = visible
 
@@ -20,6 +51,10 @@ class estimate():
 			'visible': self.visible
 		}
 
+class remote_estimate():
+	def __init__(self, e):
+		self.x = e
+
 def deserialize_estimate(e):
 	return estimate(e['guid'], e['x'], e['y'], e['distance'], e['visible'])
 
@@ -30,29 +65,14 @@ class localization_engine():
 		self.x = x
 		self.y = y
 		self.angle = 0
+		self.estimates = {}
+		self.absolute_estimates = {}
+		self.relative_estimates = {}
 		self.botmatrix = {}
 		self.seen = {}
 
 	def get_self_estimate(self):
-		return (self.x, self.y)
-
-	# def kalman_filter(self):
-	# 	# (Mu Bar) Kalman Filter Belief
-	# 	x = A*x + B*u
-
-	# 	# (Sigma Bar) Kalman Filter Belief
-	# 	P = A*P*A.T + R
-
-	# 	S = Ct*P*Ct.T + Q
-	# 	K = (PCt.T) * pinv(S)
-
-	# 	y = Z - (Ct*x)
-
-	# 	# Mu
-	# 	x = x + (K*y)
-
-	# 	# Sigma T
-	# 	P = (I - (K*Ct))*P
+		return self.x, self.y
 
 	def update(self, x, y, angle):
 		self.x += x
@@ -61,26 +81,34 @@ class localization_engine():
 		self.angle %= 360
 
 	def get_estimates(self):
-		return self.botmatrix.values()
+		return self.estimates.values()
 
 	def get_absolute_estimates(self):
-		estimates = self.botmatrix.values()
-		for e in estimates:
-			e.x += self.x
-			e.y += self.y
-		return estimates
+		return self.absolute_estimates.values()
+
+	def get_relative_estimates(self):
+		self.absolute_estimates = {}
+		for key in self.absolute_estimates.keys():
+			absolute = self.absolute_estimates[key]
+			rel_x = absolute - self.x
+			rel_y = absolute - self.y
+			distance = absolute.distance
+			visible = absolute.visible
+			self.relative_estimates[key] = relative_estimate(rel_y, rel_y, distance, visible)
+		return self.absolute_estimates.values()
 
 	def localize(self, images):
-		for key in self.botmatrix:
-			self.botmatrix[key].visible = False
+		for key in self.estimates:
+			self.estimates[key].visible = False
 		for image in images:
 			distance = SIZE/image.dimension
 			x = distance * cos(radians(image.angle))
 			y = distance * sin(radians(image.angle))
-			self.botmatrix[image.guid] = estimate(image.guid, x, y, distance)
+			self.estimates[image.guid] = estimate(image.guid, x, y)
 
 	def update_estimates(self, estimates):
 		self.seen = {}
+		print("Estimates: {}".format(estimates))
 		for estimate in estimates:
 			e = estimate['estimates']
 			self.seen[estimate['guid']] = []
