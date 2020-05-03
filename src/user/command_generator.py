@@ -24,8 +24,12 @@ class command_generator():
 			elif character == 'm':
 				for key in self.actions.keys():
 					self.actions[key] = {
-						'cmd': shutdown
+						'cmd': 'read_data'
 					}
+			elif character == 'l':
+				self.actions[self.current_guid] = {
+					'cmd': 'localize'
+				}
 
 	def __action_parser(self, character):
 		action = {

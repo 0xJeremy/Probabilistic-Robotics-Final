@@ -43,6 +43,11 @@ class Robot():
 		if action['cmd'] is 'picture':
 			images = self.hardware.take_picture()
 			self.localization.localize(images)
+		if action['cmd'] is 'localize':
+			if self.connected:
+				self.socket.write_all_estimates(self.localization.get_estimates())
+		if action['cmd'] is 'read_data':
+			self.localization.update_estimates(self.socket.get_all_estimates())
 
 	def get_self_estimate(self):
 		return self.localization.get_self_estimate()

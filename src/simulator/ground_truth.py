@@ -77,14 +77,11 @@ def angle(ref, other):
 		return 0 if diff_x > 0 else 180
 	if diff_x == 0:
 		return 90 if diff_y > 0 else 270
-
 	if diff_x > 0:
 		if diff_y > 0:
 			return degrees(atan(diff_y / diff_x))
 		return degrees(atan(diff_y / diff_x)) + 360
-
 	return degrees(atan(diff_y / diff_x)) + 180
-
 
 MAX_DISTANCE = 500
 MAX_ANGLE = 45
@@ -93,13 +90,7 @@ def visible(ref, other):
 	if d > MAX_DISTANCE:
 		return False
 	a = angle(ref, other)
-	print("rel angle: {}".format(a))
-	# print("ref angle: {}".format(ref.angle))
 	diff_angle = a - ref.angle
-	# diff_angle = abs(abs(a) - abs(ref.angle)) % 360
-	# Works for bot 2
-	# diff_angle = (a - abs(ref.angle)) % 360
-	print("diff angle: {}".format(diff_angle))
 	if abs(diff_angle) <= MAX_ANGLE:
 		return True
 	return False
@@ -115,7 +106,7 @@ class camera():
 		self.hardware = self_hardware
 		self.get_hardware = get_hardware
 
-	def get_image(self):
+	def take_picture(self):
 		ref = self.hardware
 		others = self.get_hardware()
 		seen = []
@@ -124,12 +115,10 @@ class camera():
 				continue
 			if visible(ref, other):
 				seen.append(construct_image(ref, other))
-		print("Seen length {}".format(len(seen)))
-		print()
 		return seen
 
 SPEED = 50
-ANGLE = 90
+ANGLE = 30
 class hardware():
 	def __init__(self, guid, get_all_hardware):
 		self.guid = guid
@@ -160,7 +149,7 @@ class hardware():
 		return self.camera
 
 	def take_picture(self):
-		return self.camera.get_image()
+		return self.camera.take_picture()
 
 	def get_position(self):
 		return (self.x, self.y, self.angle)

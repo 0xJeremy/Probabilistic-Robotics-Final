@@ -9,8 +9,16 @@ class estimate():
 		self.x = x
 		self.y = y
 		self.distance = distance
-		# TODO: Find heading other relative bot
-		# self.angle = angle
+		self.visible = True
+
+	def serialize(self):
+		return {
+			'guid': self.guid,
+			'x': self.x,
+			'y': self.y,
+			'distance': self.distance,
+			'visible': self.visible
+		}
 
 SIZE = 200
 
@@ -52,9 +60,13 @@ class localization_engine():
 		return self.botmatrix.values()
 
 	def localize(self, images):
-		self.botmatrix = {}
+		for key in self.botmatrix:
+			self.botmatrix[key].visible = False
 		for image in images:
 			distance = SIZE/image.dimension
 			x = distance * cos(radians(image.angle)) + self.x
 			y = distance * sin(radians(image.angle)) + self.y
 			self.botmatrix[image.guid] = estimate(image.guid, x, y, distance)
+
+	def update_estimates(self, estimates):
+		pass
