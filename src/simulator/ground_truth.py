@@ -65,26 +65,35 @@ class image():
 		self.dimension = dimension
 		self.angle = angle_from_center
 
-def visible(ref, other):
+def distance(ref, other):
 	diff_x = other.x - ref.x
 	diff_y = other.y - ref.y
-	if sqrt(diff_x**2 + diff_y**2) > 500:
+	return sqrt(diff_x**2 + diff_y**2)
+
+def angle(ref, other):
+	diff_x = other.x - ref.x
+	diff_y = other.y - ref.y
+	mult = 1 if diff_x > 0 else -1
+	return mult * degrees(tanh(diff_y / diff_x))
+
+def visible(ref, other):
+	d = distance(ref, other)
+	if d > 500:
 		return False
-	print("distance: {}".format(sqrt(diff_x**2 + diff_y**2)))
-	angle = degrees(tanh(diff_y / diff_x))
-	print("angle: {}".format(angle))
-	diff_angle = (abs(angle) % 360) - (abs(ref.angle) % 360)
+	print("distance: {}".format(d))
+	a = angle(ref, other)
+	print("angle: {}".format(a))
+	diff_angle = a - ref.angle
+	print("diff angle: {}".format(diff_angle))
 	if diff_angle < 45:
 		return True
 	return False
 
 SIZE = 200
 def construct_image(ref, other):
-	diff_x = other.x - ref.x
-	diff_y = other.y - ref.y
-	distance = sqrt(diff_x**2 + diff_y**2)
-	angle = degrees(tanh(diff_y / diff_x))
-	return image(other.guid, SIZE/distance, angle)
+	d = distance(ref, other)
+	a = angle(ref, other)
+	return image(other.guid, SIZE/d, a)
 
 class camera():
 	def __init__(self, self_hardware, get_hardware):
@@ -96,6 +105,7 @@ class camera():
 		others = self.get_hardware()
 		seen = []
 		for other in others:
+			print("Ref id:", ref.guid)
 			if ref.guid is other.guid:
 				continue
 			if visible(ref, other):
@@ -125,7 +135,7 @@ class hardware():
 			self.angle += 30
 		elif direction is 'turn_left':
 			self.angle -= 30
-		return (origx-self.x, origy-self.y, origangle-self.angle)
+		return (origx-self.x, origy-self.y, self.angle-origangle)
 
 	def get_motor(self):
 		return self.motor
@@ -147,7 +157,7 @@ class hardware():
 		self.y = y
 
 
-STARTING_X = [150, 200]
+STARTING_X = [125, 200]
 STARTING_Y = [500, 500]
 
 class ground_truth():

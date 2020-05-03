@@ -11,7 +11,7 @@ class Robot():
 		self.connected = connect
 		if connect:
 			self.socket = communication_engine(guid, ip, port)
-		self.localization = localization_engine()
+		self.localization = localization_engine(self.hardware.x, self.hardware.y)
 		self.stopped = False
 
 	def start(self):

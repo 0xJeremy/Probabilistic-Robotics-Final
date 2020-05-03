@@ -15,9 +15,9 @@ class estimate():
 SIZE = 200
 
 class localization_engine():
-	def __init__(self):
-		self.x = 0
-		self.y = 0
+	def __init__(self, x, y):
+		self.x = x
+		self.y = y
 		self.angle = 0
 		self.botmatrix = {}
 
@@ -53,6 +53,6 @@ class localization_engine():
 	def localize(self, images):
 		for image in images:
 			distance = SIZE/image.dimension
-			x = distance * cos(radians(self.angle))
-			y = distance * sin(radians(self.angle))
+			x = distance * cos(radians(image.angle)) + self.x
+			y = distance * sin(radians(image.angle)) + self.y
 			self.botmatrix[image.guid] = estimate(image.guid, x, y, distance)
