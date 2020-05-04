@@ -162,8 +162,8 @@ class hardware():
 		self.y = y
 
 
-STARTING_X = [100, 200]
-STARTING_Y = [500, 500]
+# STARTING_X = [100, 300, 300]
+# STARTING_Y = [500, 480, 520]
 
 class ground_truth():
 	def __init__(self, width, height, unit):
@@ -175,10 +175,10 @@ class ground_truth():
 
 	def get_hardware_instance(self, guid):
 		h = hardware(guid, self.get_all_hardware)
-		x = STARTING_X[guid]
-		y = STARTING_Y[guid]
-		# x = random.randint(self.unit, self.width-self.unit)
-		# y = random.randint(self.unit, self.height-self.unit)
+		# x = STARTING_X[guid]
+		# y = STARTING_Y[guid]
+		x = random.randint(self.unit, self.width-self.unit)
+		y = random.randint(self.unit, self.height-self.unit)
 		h.set_position(x, y)
 		self.hardware.append(h)
 		return h

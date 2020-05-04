@@ -19,6 +19,7 @@ class visualizer():
 		self.unit = self.gt.unit
 		self.stopped = False
 		self.frame = np.zeros((self.width,self.height,3), np.uint8)
+		self.counter = 0
 		for i in range(int(self.width/self.unit)):
 			u = i*self.unit
 			cv2.line(self.frame, (u, 0), (u, self.width), (100, 100, 100), 1, 1)
@@ -42,6 +43,9 @@ class visualizer():
 		self.generator.give_key(key)
 		frame = self.generate_frame()
 		cv2.imshow("Simulator", frame)
+		if key == ord('.'):
+			cv2.imwrite('images/frame{}.png'.format(self.counter), frame)
+			self.counter += 1
 
 	def generate_frame(self):
 		frame = copy.copy(self.frame)
@@ -58,6 +62,8 @@ class visualizer():
 			for e in bot.get_estimates():
 				if e.visible and e.islocal():
 					color = (0, 255, 0)
+				elif e.isremote():
+					color = (0, 0, 255)
 				else:
 					color = (0, 140, 255)
 				cv2.circle(frame, (int(e.x+e.dx), int(e.y+e.dy)), GT_SIZE, color, -1)

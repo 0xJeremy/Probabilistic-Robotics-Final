@@ -92,15 +92,14 @@ class localization_engine():
 
 	def update_estimates(self, estimates):
 		self.seen = {}
-		print("Estimates: {}".format(estimates))
 		for e in estimates:
 			est = estimate(
 					p_guid=self.guid,
 					r_guid=e['personal_guid'],
 					x=self.x,
 					y=self.y,
-					dx=-e['dx'],
-					dy=-e['dy'],
+					dx=e['x']-self.x,
+					dy=e['y']-self.y,
 					type=estimate.REMOTE
 				)
 			self.estimates[e['personal_guid']] = est
