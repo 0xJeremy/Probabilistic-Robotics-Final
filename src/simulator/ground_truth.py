@@ -83,28 +83,28 @@ def angle(ref, other):
 		return degrees(atan(diff_y / diff_x)) + 360
 	return degrees(atan(diff_y / diff_x)) + 180
 
-MAX_DISTANCE = 500
-MAX_ANGLE = 45
-def visible(ref, other):
+def visible(ref, other, max_distance, max_angle):
 	d = distance(ref, other)
-	if d > MAX_DISTANCE:
+	if d > max_distance:
 		return False
 	a = angle(ref, other)
 	diff_angle = a - ref.angle
-	if abs(diff_angle) <= MAX_ANGLE:
+	if abs(diff_angle) <= max_angle:
 		return True
 	return False
 
-SIZE = 200
-def construct_image(ref, other):
+def construct_image(ref, other, image_size):
 	d = distance(ref, other)
 	a = angle(ref, other)
-	return image(other.guid, SIZE/d, a)
+	return image(other.guid, image_size/d, a)
 
 class camera():
-	def __init__(self, self_hardware, get_hardware):
+	def __init__(self, self_hardware, get_hardware, image_size, max_distance, max_angle):
 		self.hardware = self_hardware
 		self.get_hardware = get_hardware
+		self.image_size = image_size
+		self.max_distance = max_distance
+		self.max_angle = max_angle
 
 	def take_picture(self):
 		ref = self.hardware
@@ -113,17 +113,17 @@ class camera():
 		for other in others:
 			if ref.guid is other.guid:
 				continue
-			if visible(ref, other):
-				seen.append(construct_image(ref, other))
+			if visible(ref, other, self.max_distance, self.max_angle):
+				seen.append(construct_image(ref, other, self.image_size))
 		return seen
 
-SPEED = 50
-ANGLE = 30
 class hardware():
-	def __init__(self, guid, get_all_hardware):
+	def __init__(self, guid, get_all_hardware, speed, angle, image_size, max_distance, max_angle):
 		self.guid = guid
 		self.motor = motor()
-		self.camera = camera(self, get_all_hardware)
+		self.camera = camera(self, get_all_hardware, image_size, max_distance, max_angle)
+		self.move_speed = speed
+		self.turn_angle = angle
 		self.angle = 0
 		self.x = 0
 		self.y = 0
@@ -132,10 +132,10 @@ class hardware():
 		diff_x, diff_y, diff_angle = 0, 0, 0
 		if direction is 'forward' or direction is 'backward':
 			mult = 1 if direction is 'forward' else -1
-			diff_x = mult * SPEED * cos(radians(self.angle))
-			diff_y = mult * SPEED * sin(radians(self.angle))
+			diff_x = mult * self.move_speed * cos(radians(self.angle))
+			diff_y = mult * self.move_speed * sin(radians(self.angle))
 		if direction is 'turn_right' or direction is 'turn_left':
-			diff_angle = ANGLE if direction is 'turn_right' else -ANGLE
+			diff_angle = self.turn_angle if direction is 'turn_right' else -self.turn_angle
 		self.x += diff_x
 		self.y += diff_y
 		self.angle += diff_angle
@@ -161,22 +161,26 @@ class hardware():
 		self.x = x
 		self.y = y
 
-
-# STARTING_X = [100, 300, 300]
-# STARTING_Y = [500, 480, 520]
-
 class ground_truth():
-	def __init__(self, width, height, unit):
+	def __init__(self, width, height, unit, speed, angle, max_distance, max_angle, image_size):
 		self.width = width
 		self.height = height
 		self.unit = unit
+		self.speed = speed
+		self.angle = angle
+		self.max_distance = max_distance
+		self.max_angle = max_angle
+		self.image_size = image_size
 		self.hardware = []
-		pass
 
 	def get_hardware_instance(self, guid):
-		h = hardware(guid, self.get_all_hardware)
-		# x = STARTING_X[guid]
-		# y = STARTING_Y[guid]
+		h = hardware(guid,
+					 self.get_all_hardware,
+					 self.speed,
+					 self.angle,
+					 self.image_size,
+					 self.max_distance,
+					 self.max_angle)
 		x = random.randint(self.unit, self.width-self.unit)
 		y = random.randint(self.unit, self.height-self.unit)
 		h.set_position(x, y)

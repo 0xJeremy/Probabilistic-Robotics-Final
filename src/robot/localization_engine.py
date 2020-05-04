@@ -37,13 +37,12 @@ class estimate():
 			'visible': self.visible
 		}
 
-SIZE = 200
-
 class localization_engine():
-	def __init__(self, guid, x, y):
+	def __init__(self, guid, x, y, image_size):
 		self.guid = guid
 		self.x = x
 		self.y = y
+		self.image_size = image_size
 		self.angle = 0
 		self.estimates = {}
 		self.absolute_estimates = {}
@@ -76,7 +75,7 @@ class localization_engine():
 		for key in self.estimates:
 			self.estimates[key].visible = False
 		for image in images:
-			distance = SIZE/image.dimension
+			distance = self.image_size/image.dimension
 			dx = distance * cos(radians(image.angle))
 			dy = distance * sin(radians(image.angle))
 			est = estimate(

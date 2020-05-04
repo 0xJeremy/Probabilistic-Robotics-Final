@@ -1,5 +1,5 @@
 {
-	"num_bots": 5,
+	"num_bots": 3,
 	"viz": {
 		"ip": "127.0.0.1",
 		"port": 8000,
@@ -13,6 +13,11 @@
 	"sim": {
 		"width": 700,
 		"height": 700,
-		"unit": 50
+		"unit": 50,
+		"speed": 50,
+		"angle": 30,
+		"image_size": 10,
+		"max_distance": 500,
+		"max_angle": 45
 	}
 }

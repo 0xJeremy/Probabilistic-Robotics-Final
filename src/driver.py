@@ -17,7 +17,8 @@ def initialize_bots(gt, generator):
 					port=config['bots']['s_port']+i,
 					hardware=sim,
 					generator=generator,
-					connect=config['bots']['connect']
+					connect=config['bots']['connect'],
+					image_size=config['sim']['image_size']
 			  )
 		bots.append(bot)
 	return bots
@@ -27,7 +28,12 @@ if __name__ == '__main__':
 		generator = command_generator(config['num_bots'])
 		gt = ground_truth(width=config['sim']['width'],
 						  height=config['sim']['height'],
-						  unit=config['sim']['unit'])
+						  unit=config['sim']['unit'],
+						  speed=config['sim']['speed'],
+						  angle=config['sim']['angle'],
+						  image_size=config['sim']['image_size'],
+						  max_distance=config['sim']['max_distance'],
+						  max_angle=config['sim']['max_angle'])
 		bots = initialize_bots(gt, generator)
 		viz = visualizer(ip=config['viz']['ip'],
 						 port=config['viz']['port'],

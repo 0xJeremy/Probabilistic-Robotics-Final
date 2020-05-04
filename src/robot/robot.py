@@ -3,7 +3,7 @@ from .localization_engine import localization_engine
 from threading import Thread
 
 class Robot():
-	def __init__(self, guid, ip, port, hardware, generator, connect):
+	def __init__(self, guid, ip, port, hardware, generator, connect, image_size):
 		self.guid = guid
 		self.hardware = hardware
 		self.action_generator = generator
@@ -11,7 +11,7 @@ class Robot():
 		self.connected = connect
 		if connect:
 			self.socket = communication_engine(guid, ip, port)
-		self.localization = localization_engine(guid, self.hardware.x, self.hardware.y)
+		self.localization = localization_engine(guid, self.hardware.x, self.hardware.y, image_size)
 		self.stopped = False
 
 	def start(self):
