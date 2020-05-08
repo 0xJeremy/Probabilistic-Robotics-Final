@@ -35,6 +35,7 @@ a: Rotate right 1 degree_unit
 p: Take picture and localize self to others
 l: Report localizations to network
 m: Read from network and localize others to self
+q: Quit the simulation
 ```
 
 #### Simulation Configuration
